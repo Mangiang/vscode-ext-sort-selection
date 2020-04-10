@@ -2,7 +2,7 @@
 	"name": "sort-selection",
 	"displayName": "sort-selection",
 	"description": "A simple VSCode extension to sort the selected array",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
@@ -10,14 +10,16 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onCommand:extension.sort-array"
 	],
 	"main": "./out/extension.js",
+	"repository": "https://github.com/Mangiang/vscode-ext-sort-selection",
+	"publisher": "mangiang",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "extension.sort-array",
+				"title": "Sort selected array"
 			}
 		]
 	},
