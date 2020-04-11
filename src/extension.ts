@@ -3,22 +3,53 @@ import { ExtensionContext, commands, window, TextEditor, Range, Selection } from
 export function activate(context: ExtensionContext) {
 
 	let disposable = commands.registerCommand('extension.sort-array', () => {
-		const editor = window.activeTextEditor;
-		if (!editor) { return; }
-		const selectionStr: string = editor.document.getText(new Range(editor.selection.start, editor.selection.end));
-		const arr = getArray(selectionStr);
-		replaceArray(editor, editor.selection, `[${arr.join(',')}]`);
+		sortAndReplace();
 	});
 
 	context.subscriptions.push(disposable);
 }
 
-function getArray(selectionStr: string): Array<string> {
-	const match: RegExpMatchArray | null = selectionStr.match(/\[((.*\n*\s*)+)\]/m);
-	if (!match) { return []; };
+function sortAndReplace() {
+	const editor = window.activeTextEditor;
+	if (!editor) { return; }
+	const selectionStr: string = editor.document.getText(new Range(editor.selection.start, editor.selection.end));
 
-	const matchStr = match[1];
+	// Array Case ['a','c','b']
+	let match: RegExpMatchArray | null = selectionStr.match(/\[((.*\n*\s*)+)\]/m);
+	let arr: Array<string> = [];
+	if (match) {
+		arr = getArray(match[1]);
+		replaceArray(editor, editor.selection, `[${arr.join(',')}]`);
+		return;
+	};
 
+	// Tuple Case ('a','c','b')
+	match = selectionStr.match(/\(((.*\n*\s*)+)\)/m);
+	if (match) {
+		arr = getArray(match[1]);
+		replaceArray(editor, editor.selection, `(${arr.join(',')})`);
+		return;
+	};
+
+	// Object Case {'a':'a.a','c':'c.c','b':'b.b'}
+	match = selectionStr.match(/\{((.*\n*\s*)+)\}/m);
+	if (match) {
+		arr = getArray(match[1]);
+		replaceArray(editor, editor.selection, `{${arr.join(',')}}`);
+		return;
+	};
+
+	// Comma separated string Case 'a','c','b'
+	match = selectionStr.match(/((.*\n*\s*)+)/m);
+	if (match) {
+		arr = getArray(match[1]);
+		replaceArray(editor, editor.selection, `${arr.join(',')}`);
+		return;
+	};
+
+}
+
+function getArray(matchStr: string): Array<string> {
 	const rootCommaIdxList: Array<number> = [];
 	let backQuoteCeption = 0;
 	let singleQuoteCeption = 0;
